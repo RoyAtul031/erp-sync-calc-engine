@@ -69,10 +69,28 @@ TEMPLATES = [
 WSGI_APPLICATION = "core.wsgi.application"
 ASGI_APPLICATION = "core.asgi.application"
 
-# Database Configuration (PostgreSQL ready with zero-dependency SQLite fallback)
+# Database Configuration (Supports DATABASE_URL, PostgreSQL, or zero-dependency SQLite fallback)
+import urllib.parse
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 DB_ENGINE = os.getenv("DB_ENGINE", "sqlite").lower()
 
-if DB_ENGINE == "postgres" or os.getenv("POSTGRES_DB"):
+if DATABASE_URL:
+    parsed_db = urllib.parse.urlparse(DATABASE_URL)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": parsed_db.path.lstrip("/"),
+            "USER": parsed_db.username,
+            "PASSWORD": urllib.parse.unquote(parsed_db.password) if parsed_db.password else "",
+            "HOST": parsed_db.hostname,
+            "PORT": str(parsed_db.port or "5432"),
+            "OPTIONS": {
+                "sslmode": "require",
+            },
+        }
+    }
+elif DB_ENGINE == "postgres" or os.getenv("POSTGRES_DB"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -81,6 +99,9 @@ if DB_ENGINE == "postgres" or os.getenv("POSTGRES_DB"):
             "PASSWORD": os.getenv("POSTGRES_PASSWORD", "postgres"),
             "HOST": os.getenv("POSTGRES_HOST", "localhost"),
             "PORT": os.getenv("POSTGRES_PORT", "5432"),
+            "OPTIONS": {
+                "sslmode": os.getenv("POSTGRES_SSLMODE", "prefer"),
+            },
         }
     }
 else:
