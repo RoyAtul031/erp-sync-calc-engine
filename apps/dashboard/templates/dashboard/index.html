@@ -1,0 +1,550 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniSync ESG | Global Enterprise ERP Data Sync & Deterministic Calculation Engine</title>
+  
+  <!-- Modern Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="top-nav">
+    <div class="brand-wrapper">
+      <div class="logo-badge">
+        <i class="fa-solid fa-earth-americas"></i>
+      </div>
+      <div class="brand-text">
+        <h1>
+          OmniSync ESG
+          <span class="badge-pill badge-emerald">Global Enterprise Edition</span>
+          <span class="badge-pill badge-cyan">Multi-Jurisdiction Compliance</span>
+        </h1>
+        <p>Enterprise ERP Data Sync (SAP S/4HANA & Workday) | Deterministic Multi-Framework Math (EU CSRD, US EPA, BRSR, GHG Protocol) | SOX/ISO Auditable Lineage</p>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/" class="btn btn-secondary btn-sm">
+        <i class="fa-solid fa-house"></i> Landing Page
+      </a>
+      <a href="/api/docs/" target="_blank" class="btn btn-secondary btn-sm">
+        <i class="fa-solid fa-book-open"></i> Swagger API Docs
+      </a>
+      <a href="/api/schema/" target="_blank" class="btn btn-secondary btn-sm">
+        <i class="fa-solid fa-code"></i> OpenAPI 3.0 Spec
+      </a>
+      <button class="btn btn-primary btn-sm" onclick="triggerSyncAll(this)">
+        <i class="fa-solid fa-arrows-rotate"></i> Sync All Global ERPs
+      </button>
+      <a href="/logout/" class="btn btn-secondary btn-sm" title="Sign Out">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- Tab Bar -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="tab-overview">
+        <i class="fa-solid fa-chart-pie"></i> ESG Overview & Global KPIs
+      </button>
+      <button class="tab-btn" data-tab="tab-erp-hub">
+        <i class="fa-solid fa-network-wired"></i> Global ERP Integration Hub
+      </button>
+      <button class="tab-btn" data-tab="tab-calc-studio">
+        <i class="fa-solid fa-calculator"></i> Calculation Studio & Methodologies
+      </button>
+      <button class="tab-btn" data-tab="tab-audit-trail">
+        <i class="fa-solid fa-shield-halved"></i> Audit Proof & Lineage
+      </button>
+    </nav>
+
+    <!-- Tab 1: ESG Overview & KPIs -->
+    <section id="tab-overview" class="tab-content active">
+      
+      <!-- Metrics Banner -->
+      <div class="metrics-grid">
+        
+        <div class="metric-card card-scope1">
+          <div class="metric-header">
+            <span class="metric-title">Scope 1 (Direct GHG)</span>
+            <span class="badge-pill badge-amber">Fuels & Gas</span>
+          </div>
+          <div class="metric-value-wrap">
+            <span class="metric-value">
+              {% if latest_run %}{{ latest_run.total_scope_1_tco2e|floatformat:1 }}{% else %}0.0{% endif %}
+            </span>
+            <span class="metric-unit">tCO2e</span>
+          </div>
+          <div class="metric-subtext">
+            <i class="fa-solid fa-fire"></i> Diesel Generators & Natural Gas
+          </div>
+        </div>
+
+        <div class="metric-card card-scope2-loc">
+          <div class="metric-header">
+            <span class="metric-title">Scope 2 (Location-Based)</span>
+            <span class="badge-pill badge-cyan">Regional Grids</span>
+          </div>
+          <div class="metric-value-wrap">
+            <span class="metric-value">
+              {% if latest_run %}{{ latest_run.total_scope_2_location_tco2e|floatformat:1 }}{% else %}0.0{% endif %}
+            </span>
+            <span class="metric-unit">tCO2e</span>
+          </div>
+          <div class="metric-subtext">
+            <i class="fa-solid fa-bolt"></i> ERCOT, CAMX, DE, IN, UK Grids
+          </div>
+        </div>
+
+        <div class="metric-card card-scope2-mkt">
+          <div class="metric-header">
+            <span class="metric-title">Scope 2 (Market-Based)</span>
+            <span class="badge-pill badge-emerald">Renewables / PPA</span>
+          </div>
+          <div class="metric-value-wrap">
+            <span class="metric-value">
+              {% if latest_run %}{{ latest_run.total_scope_2_market_tco2e|floatformat:1 }}{% else %}0.0{% endif %}
+            </span>
+            <span class="metric-unit">tCO2e</span>
+          </div>
+          <div class="metric-subtext">
+            <i class="fa-solid fa-certificate"></i> REC / Green Tariffs Zero Emissions
+          </div>
+        </div>
+
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="metric-title">Total Corporate GHG</span>
+            <span class="badge-pill badge-indigo">Net Footprint</span>
+          </div>
+          <div class="metric-value-wrap">
+            <span class="metric-value">
+              {% if latest_run %}{{ latest_run.total_ghg_emissions_tco2e|floatformat:1 }}{% else %}0.0{% endif %}
+            </span>
+            <span class="metric-unit">tCO2e</span>
+          </div>
+          <div class="metric-subtext">
+            <i class="fa-solid fa-globe"></i> Scope 1 + Scope 2 Location
+          </div>
+        </div>
+
+        <div class="metric-card card-social">
+          <div class="metric-header">
+            <span class="metric-title">Workforce Diversity</span>
+            <span class="badge-pill badge-indigo">Social Pillar</span>
+          </div>
+          <div class="metric-value-wrap">
+            <span class="metric-value">
+              {% if latest_run %}{{ latest_run.avg_gender_diversity_pct|floatformat:1 }}{% else %}0.0{% endif %}
+            </span>
+            <span class="metric-unit">%</span>
+          </div>
+          <div class="metric-subtext">
+            <i class="fa-solid fa-users"></i> Female Representation
+          </div>
+        </div>
+
+        <div class="metric-card card-social">
+          <div class="metric-header">
+            <span class="metric-title">Safety LTIFR</span>
+            <span class="badge-pill badge-indigo">Global EHS</span>
+          </div>
+          <div class="metric-value-wrap">
+            <span class="metric-value">
+              {% if latest_run %}{{ latest_run.avg_ltifr|floatformat:2 }}{% else %}0.00{% endif %}
+            </span>
+            <span class="metric-unit">/1M hrs</span>
+          </div>
+          <div class="metric-subtext">
+            <i class="fa-solid fa-user-shield"></i> Lost-Time Incident Frequency
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Facility Operational Matrix -->
+      <div class="glass-panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title"><i class="fa-solid fa-industry"></i> Monitored Global Enterprise Facilities & Plants</h2>
+            <p class="panel-subtitle">Operational sites reporting automated utility and workforce metrics from SAP S/4HANA & Workday HCM</p>
+          </div>
+          <span class="badge-pill badge-emerald">{{ facilities|length }} Global Sites Active</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Plant Code</th>
+                <th>Facility Name</th>
+                <th>Country</th>
+                <th>Grid Subregion</th>
+                <th>Facility Type</th>
+                <th>Headcount</th>
+                <th>Area (sq ft)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for fac in facilities %}
+              <tr>
+                <td class="font-mono"><strong>{{ fac.code }}</strong></td>
+                <td>{{ fac.name }}</td>
+                <td>{{ fac.country }}</td>
+                <td><span class="badge-pill badge-cyan">{{ fac.grid_subregion }}</span></td>
+                <td>{{ fac.get_facility_type_display }}</td>
+                <td>{{ fac.baseline_headcount }} FTE</td>
+                <td>{{ fac.gross_area_sqft|floatformat:0 }}</td>
+                <td>
+                  <span class="pulse-dot"></span> Active
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="8" style="text-align:center; padding:2rem; color:var(--text-muted);">
+                  No facilities loaded yet. Click "Sync All Global ERPs" to auto-provision facilities from SAP & Workday!
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Tab 2: ERP Integration Hub -->
+    <section id="tab-erp-hub" class="tab-content">
+      
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title"><i class="fa-solid fa-plug"></i> Enterprise ERP & HR Connectors</h2>
+          <p class="panel-subtitle">Scheduled and on-demand synchronization with corporate systems (SAP S/4HANA & Workday HCM)</p>
+        </div>
+        <button class="btn btn-primary" onclick="triggerSyncAll(this)">
+          <i class="fa-solid fa-arrows-rotate"></i> Sync All Global ERPs
+        </button>
+      </div>
+
+      <!-- Connector Cards Grid -->
+      <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));">
+        {% for conn in connections %}
+        <div class="glass-panel" style="margin-bottom:0;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem;">
+            <div>
+              <span class="badge-pill badge-emerald">
+                <i class="fa-solid fa-circle-check"></i> {{ conn.get_last_sync_status_display }}
+              </span>
+              <h3 style="color:#fff; font-size:1.15rem; margin-top:0.4rem;">{{ conn.name }}</h3>
+              <p style="font-size:0.8rem; color:var(--text-muted); font-family:monospace;">{{ conn.get_connector_type_display }}</p>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="triggerSync('{{ conn.id }}', this)">
+              <i class="fa-solid fa-rotate"></i> Sync Now
+            </button>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.03); padding:0.8rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.82rem; margin-bottom:1rem;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+              <span style="color:var(--text-dim);">Auth Mode:</span>
+              <span style="color:#fff; font-weight:600;">{{ conn.get_auth_mode_display }}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+              <span style="color:var(--text-dim);">Sync Cadence:</span>
+              <span style="color:#fff;">Every {{ conn.sync_interval_minutes }} mins</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem;">
+              <span style="color:var(--text-dim);">Total Ingested:</span>
+              <span style="color:#10b981; font-weight:700;">{{ conn.total_records_synced }} records</span>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:var(--text-dim);">Last Synced:</span>
+              <span style="color:var(--text-muted);">
+                {% if conn.last_sync_at %}{{ conn.last_sync_at|date:"Y-m-d H:i:s" }} UTC{% else %}Never{% endif %}
+              </span>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:0.5rem;">
+            <a href="/api/erp/connections/{{ conn.id }}/" target="_blank" class="btn btn-secondary btn-sm" style="flex:1; justify-content:center;">
+              <i class="fa-solid fa-sliders"></i> Config JSON
+            </a>
+            <a href="/api/erp/raw-payloads/?connection={{ conn.id }}" target="_blank" class="btn btn-secondary btn-sm" style="flex:1; justify-content:center;">
+              <i class="fa-solid fa-file-shield"></i> Raw Snapshots
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Sync Batch Execution History -->
+      <div class="glass-panel" style="margin-top:1.75rem;">
+        <div class="panel-header">
+          <div>
+            <h3 class="panel-title"><i class="fa-solid fa-clock-rotate-left"></i> Ingestion Batch Logs & SHA-256 Checksums</h3>
+            <p class="panel-subtitle">Full cryptographic audit log of automated and manual sync executions</p>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Batch ID</th>
+                <th>System</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Records Saved</th>
+                <th>Duration</th>
+                <th>SHA-256 Checksum</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for batch in recent_batches %}
+              <tr>
+                <td class="font-mono">{{ batch.id|stringformat:".8s" }}...</td>
+                <td>{{ batch.connection.name }}</td>
+                <td><span class="badge-pill badge-cyan">{{ batch.get_sync_type_display }}</span></td>
+                <td>
+                  {% if batch.status == "SUCCESS" %}
+                  <span class="badge-pill badge-emerald">SUCCESS</span>
+                  {% elif batch.status == "PARTIAL" %}
+                  <span class="badge-pill badge-amber">PARTIAL</span>
+                  {% else %}
+                  <span class="badge-pill" style="background:rgba(244,63,94,0.2); color:#fb7185;">{{ batch.status }}</span>
+                  {% endif %}
+                </td>
+                <td style="color:#10b981; font-weight:700;">+{{ batch.records_saved }}</td>
+                <td>{{ batch.duration_ms }}ms</td>
+                <td class="font-mono" style="color:var(--text-dim);">{{ batch.batch_checksum|stringformat:".16s" }}...</td>
+                <td>{{ batch.started_at|date:"M d, H:i:s" }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="8" style="text-align:center; padding:2rem; color:var(--text-muted);">
+                  No sync batches executed yet. Click "Sync Now" on any ERP connector above!
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Tab 3: Calculation Studio & Methodologies -->
+    <section id="tab-calc-studio" class="tab-content">
+      
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title"><i class="fa-solid fa-square-root-variable"></i> Deterministic Calculation Studio</h2>
+          <p class="panel-subtitle">Customizable mathematical formulas, certified emission factor libraries, and global compliance frameworks</p>
+        </div>
+        <button class="btn btn-primary" onclick="triggerCalculation('{{ active_methodology.id }}', this)">
+          <i class="fa-solid fa-play"></i> Execute Full Deterministic Run
+        </button>
+      </div>
+
+      <!-- Global Multi-Jurisdiction Compliance Framework Badges -->
+      <div style="display:flex; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+        {% for fw in frameworks %}
+        <div style="background:rgba(15,23,42,0.8); border:1px solid {% if fw.is_default %}var(--accent-indigo){% else %}var(--border-color){% endif %}; padding:0.8rem 1.2rem; border-radius:10px; display:flex; align-items:center; gap:0.6rem;">
+          <i class="fa-solid fa-scale-balanced" style="color:{% if fw.is_default %}#818cf8{% else %}var(--text-dim){% endif %};"></i>
+          <div>
+            <div style="font-size:0.85rem; font-weight:700; color:#fff;">{{ fw.name }}</div>
+            <div style="font-size:0.72rem; color:var(--text-muted);">Jurisdiction: {{ fw.jurisdiction }} | Ver: {{ fw.version_tag }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Formula Customization Table -->
+      <div class="glass-panel">
+        <div class="panel-header">
+          <div>
+            <h3 class="panel-title"><i class="fa-solid fa-sliders"></i> Customizable Calculation Formulas</h3>
+            <p class="panel-subtitle">Active Methodology: <strong>{{ active_methodology.name }} ({{ active_methodology.version_label }})</strong></p>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Rule Code</th>
+                <th>KPI Category</th>
+                <th>Formula Expression (Editable by Analyst)</th>
+                <th>Target Unit</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rule in active_methodology.formula_rules.all %}
+              <tr>
+                <td class="font-mono"><strong>{{ rule.rule_code }}</strong></td>
+                <td><span class="badge-pill badge-cyan">{{ rule.get_kpi_category_display }}</span></td>
+                <td>
+                  <input type="text" id="rule-expr-{{ rule.id }}" class="form-input font-mono" value="{{ rule.expression }}" style="font-size:0.85rem;">
+                </td>
+                <td><span class="badge-pill badge-indigo">{{ rule.output_unit }}</span></td>
+                <td>
+                  <button class="btn btn-secondary btn-sm" onclick="saveFormulaRule('{{ rule.id }}')">
+                    <i class="fa-solid fa-floppy-disk"></i> Save
+                  </button>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">
+                  No formula rules configured. Run database seed to populate standard rules!
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Live Formula Sandbox Simulator -->
+      <div class="glass-panel">
+        <div class="panel-header">
+          <div>
+            <h3 class="panel-title"><i class="fa-solid fa-vial"></i> Live Math Sandbox & AST Formula Validator</h3>
+            <p class="panel-subtitle">Test and preview custom equations against sample utility variables with safe Python AST parsing</p>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 2fr 1fr; gap:1.5rem;">
+          <div>
+            <div style="margin-bottom:1rem;">
+              <label style="font-size:0.8rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:0.4rem;">
+                Mathematical Expression:
+              </label>
+              <input type="text" id="sim-expression" class="form-input font-mono" value="(consumption * emission_factor) / 1000.0">
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:0.8rem; margin-bottom:1rem;">
+              <div>
+                <label style="font-size:0.75rem; color:var(--text-dim); display:block; margin-bottom:0.3rem;">consumption</label>
+                <input type="number" id="sim-var-consumption" class="form-input" value="12500">
+              </div>
+              <div>
+                <label style="font-size:0.75rem; color:var(--text-dim); display:block; margin-bottom:0.3rem;">emission_factor</label>
+                <input type="number" step="0.001" id="sim-var-factor" class="form-input" value="2.687">
+              </div>
+              <div>
+                <label style="font-size:0.75rem; color:var(--text-dim); display:block; margin-bottom:0.3rem;">gwp</label>
+                <input type="number" id="sim-var-gwp" class="form-input" value="1.0">
+              </div>
+            </div>
+
+            <button id="btn-test-formula" class="btn btn-indigo">
+              <i class="fa-solid fa-bolt"></i> Validate & Evaluate Expression
+            </button>
+          </div>
+
+          <div style="background:#060911; border:1px solid var(--border-color); border-radius:10px; padding:1.2rem; display:flex; flex-direction:column; justify-content:center;">
+            <div style="font-size:0.75rem; font-weight:700; color:var(--text-dim); text-transform:uppercase; margin-bottom:0.5rem;">
+              AST Engine Execution Preview:
+            </div>
+            <div id="sim-result-box" style="font-size:0.85rem; color:var(--text-muted);">
+              Click "Validate & Evaluate Expression" to inspect live AST tokenization and deterministic output.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Tab 4: Audit Proof & Lineage -->
+    <section id="tab-audit-trail" class="tab-content">
+      
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title"><i class="fa-solid fa-receipt"></i> Granular Audit Lineage & Proof Inspector</h2>
+          <p class="panel-subtitle">Every calculated number is tied back to its ERP document, raw hash, factor citation, and evaluated formula</p>
+        </div>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          {% if latest_run %}
+          <a href="/api/calculation/runs/{{ latest_run.id }}/export-csv/" class="btn btn-secondary btn-sm" download>
+            <i class="fa-solid fa-file-csv"></i> Export Audit Report (CSV)
+          </a>
+          {% endif %}
+          <span class="badge-pill badge-emerald">Deterministic & Auditable</span>
+        </div>
+      </div>
+
+      <div class="glass-panel">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Facility</th>
+                <th>Category</th>
+                <th>Rule Code</th>
+                <th>Evaluated Formula</th>
+                <th>Result Value</th>
+                <th>Timestamp</th>
+                <th>Traceability</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rec in calculated_records %}
+              <tr>
+                <td><strong>{{ rec.facility.code }}</strong> ({{ rec.facility.country }})</td>
+                <td><span class="badge-pill badge-cyan">{{ rec.kpi_category }}</span></td>
+                <td class="font-mono">{{ rec.rule_code }}</td>
+                <td class="font-mono" style="color:#38bdf8; font-size:0.8rem;">{{ rec.formula_evaluated }}</td>
+                <td style="color:#fff; font-weight:700;">{{ rec.result_value }} {{ rec.result_unit }}</td>
+                <td>{{ rec.created_at|date:"M d, H:i" }}</td>
+                <td>
+                  <button class="btn btn-secondary btn-sm" onclick="openAuditProof('{{ rec.id }}')">
+                    <i class="fa-solid fa-magnifying-glass"></i> Inspect Proof
+                  </button>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">
+                  No calculations run yet. Go to "Calculation Studio" and click "Execute Full Deterministic Run"!
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Audit Proof Inspector Modal -->
+  <div id="audit-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div id="audit-modal-body">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>

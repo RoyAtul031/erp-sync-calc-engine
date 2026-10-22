@@ -1,0 +1,487 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniSync ESG | Enterprise ERP Data Sync & Deterministic ESG Engine</title>
+  
+  <!-- Modern Typography & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+  <style>
+    /* Landing-specific styles */
+    .landing-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 3rem;
+      background: rgba(8, 12, 20, 0.8);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .landing-hero {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 4rem 2.5rem 5rem;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 3.5rem;
+      align-items: center;
+      min-height: calc(100vh - 85px);
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .hero-headline {
+      font-size: 3.1rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .hero-headline span.gradient-text {
+      background: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtext {
+      font-size: 1.05rem;
+      color: #94a3b8;
+      line-height: 1.65;
+      max-width: 620px;
+    }
+
+    .trust-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+
+    .trust-badge-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.75rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    /* Enterprise Login Gateway Card */
+    .login-gateway-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(16, 185, 129, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-gateway-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #10b981, #06b6d4, #6366f1);
+    }
+
+    .login-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .login-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* SSO Buttons */
+    .sso-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-sso {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 0.65rem 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: #e2e8f0;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      text-decoration: none;
+    }
+
+    .btn-sso:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .divider-text {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 1.25rem 0;
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .divider-text::before, .divider-text::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .divider-text span {
+      padding: 0 0.75rem;
+    }
+
+    /* Quick Fill Demo Roles */
+    .demo-roles-box {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px dashed var(--border-color);
+      border-radius: 10px;
+      padding: 0.85rem;
+      margin-top: 1.5rem;
+    }
+
+    .demo-role-pill {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      padding: 0.45rem 0.65rem;
+      margin-top: 0.4rem;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .demo-role-pill:hover {
+      background: rgba(99, 102, 241, 0.18);
+      border-color: rgba(99, 102, 241, 0.4);
+      color: #fff;
+    }
+
+    /* Feature Cards Section */
+    .features-section {
+      max-width: 1400px;
+      margin: 0 auto 5rem;
+      padding: 0 2.5rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.8rem;
+      transition: var(--transition-smooth);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.18);
+      background: var(--bg-card-hover);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    @media (max-width: 1024px) {
+      .landing-hero {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        padding-top: 2rem;
+      }
+      .hero-headline {
+        font-size: 2.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Landing Top Nav -->
+  <header class="landing-nav">
+    <div class="brand-wrapper">
+      <div class="logo-badge">
+        <i class="fa-solid fa-earth-americas"></i>
+      </div>
+      <div class="brand-text">
+        <h1 style="font-size:1.15rem; color:#fff;">
+          OmniSync ESG
+          <span class="badge-pill badge-emerald">Global Enterprise</span>
+        </h1>
+        <p style="font-size:0.75rem; color:var(--text-muted);">ERP Integration & Deterministic Calculation Engine</p>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/api/docs/" target="_blank" class="btn btn-secondary btn-sm">
+        <i class="fa-solid fa-book-open"></i> API Docs
+      </a>
+      <a href="/dashboard/" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i> Launch Console
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="landing-hero">
+    
+    <!-- Hero Copy & Trust Metrics -->
+    <div class="hero-content">
+      
+      <div>
+        <span class="badge-pill badge-indigo" style="padding: 0.35rem 0.8rem; font-size:0.75rem;">
+          <span class="pulse-dot" style="margin-right:0.35rem;"></span> Enterprise Sustainability Architecture v1.0
+        </span>
+      </div>
+
+      <h1 class="hero-headline">
+        Automated ERP Data Sync & <br>
+        <span class="gradient-text">Deterministic ESG Math</span>
+      </h1>
+
+      <p class="hero-subtext">
+        Bridge corporate operational systems (<strong>SAP S/4HANA & Workday HCM</strong>) into a cryptographically auditable sustainability data warehouse. Automatically compute Scope 1, 2, and 3 GHG footprints with verifiable mathematical lineage for <strong>EU CSRD, US EPA, India BRSR, and GHG Protocol</strong> compliance.
+      </p>
+
+      <!-- Trust Badges -->
+      <div class="trust-badges">
+        <span class="trust-badge-item">
+          <i class="fa-solid fa-shield-check" style="color:#10b981;"></i> SOC 2 Type II
+        </span>
+        <span class="trust-badge-item">
+          <i class="fa-solid fa-file-contract" style="color:#06b6d4;"></i> ISO 14064-1 Aligned
+        </span>
+        <span class="trust-badge-item">
+          <i class="fa-solid fa-scale-balanced" style="color:#818cf8;"></i> EU CSRD / ESRS E1
+        </span>
+        <span class="trust-badge-item">
+          <i class="fa-solid fa-fingerprint" style="color:#fbbf24;"></i> SHA-256 SOX Lineage
+        </span>
+      </div>
+
+      <!-- Live Enterprise Metric Tickers -->
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1rem; margin-top:1rem; padding-top:1.5rem; border-top:1px solid var(--border-color);">
+        <div>
+          <div style="font-size:1.8rem; font-weight:800; color:#fff; font-family:'Outfit';">672.7 <span style="font-size:0.9rem; color:#10b981;">tCO2e</span></div>
+          <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Audited Net Footprint</div>
+        </div>
+        <div>
+          <div style="font-size:1.8rem; font-weight:800; color:#fff; font-family:'Outfit';">4 <span style="font-size:0.9rem; color:#06b6d4;">Sites</span></div>
+          <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Global Facilities (US/EU/APAC)</div>
+        </div>
+        <div>
+          <div style="font-size:1.8rem; font-weight:800; color:#fff; font-family:'Outfit';">100% <span style="font-size:0.9rem; color:#818cf8;">AST</span></div>
+          <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Deterministic Lineage</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Login Gateway Card -->
+    <div class="login-gateway-card">
+      <div class="login-title">
+        <i class="fa-solid fa-lock" style="color:#10b981;"></i> Enterprise Sign In
+      </div>
+      <p class="login-subtitle">Authenticate via Corporate SSO or enterprise role credentials</p>
+
+      <!-- Enterprise SSO Options -->
+      <div class="sso-grid">
+        <a href="/dashboard/" class="btn-sso">
+          <i class="fa-brands fa-microsoft" style="color:#00a4ef;"></i> Continue with Microsoft Entra ID (Azure AD)
+        </a>
+        <a href="/dashboard/" class="btn-sso">
+          <i class="fa-solid fa-key" style="color:#34a853;"></i> Continue with Okta / SAML 2.0 SSO
+        </a>
+      </div>
+
+      <div class="divider-text">
+        <span>Or corporate credentials</span>
+      </div>
+
+      <!-- Credentials Form -->
+      <form action="/login/" method="POST" id="login-form">
+        {% csrf_token %}
+        <div style="margin-bottom:1rem;">
+          <label style="font-size:0.78rem; font-weight:600; color:#cbd5e1; display:block; margin-bottom:0.35rem;">
+            Work Email Address:
+          </label>
+          <input type="email" name="email" id="input-email" class="form-input" placeholder="e.g. cso@enterprise.com" value="cso@enterprise.com" required>
+        </div>
+
+        <div style="margin-bottom:1.25rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+            <label style="font-size:0.78rem; font-weight:600; color:#cbd5e1;">Password:</label>
+            <span style="font-size:0.72rem; color:var(--accent-cyan);">Protected by MFA</span>
+          </div>
+          <input type="password" name="password" id="input-password" class="form-input" placeholder="••••••••••••" value="Enterprise2026!" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding:0.75rem; font-size:0.95rem;">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Enterprise Console
+        </button>
+      </form>
+
+      <!-- One-Click Demo Role Autofill -->
+      <div class="demo-roles-box">
+        <div style="font-size:0.72rem; font-weight:700; color:#94a3b8; text-transform:uppercase; display:flex; justify-content:space-between;">
+          <span>One-Click Demo Roles:</span>
+          <span style="color:#10b981;">Click to Autofill</span>
+        </div>
+
+        <button type="button" class="demo-role-pill" onclick="fillRole('cso@enterprise.com', 'Elena Vance (Chief Sustainability Officer)')">
+          <i class="fa-solid fa-user-tie" style="color:#10b981; margin-right:0.3rem;"></i> <strong>Chief Sustainability Officer (CSO)</strong> - Elena Vance
+        </button>
+
+        <button type="button" class="demo-role-pill" onclick="fillRole('analyst@enterprise.com', 'Marcus Chen (Lead ESG Analyst)')">
+          <i class="fa-solid fa-chart-line" style="color:#06b6d4; margin-right:0.3rem;"></i> <strong>Lead ESG Compliance Analyst</strong> - Marcus Chen
+        </button>
+
+        <button type="button" class="demo-role-pill" onclick="fillRole('auditor@deloitte-audit.com', 'Sarah Jenkins (Statutory Auditor)')">
+          <i class="fa-solid fa-magnifying-glass-chart" style="color:#818cf8; margin-right:0.3rem;"></i> <strong>External Statutory Auditor</strong> - Sarah Jenkins
+        </button>
+      </div>
+
+      <!-- Direct Guest Bypass -->
+      <div style="text-align:center; margin-top:1.25rem;">
+        <a href="/dashboard/" style="font-size:0.82rem; color:#38bdf8; text-decoration:none; font-weight:600;">
+          Explore Console as Guest (No Login Required) →
+        </a>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Architectural Pillars Section -->
+  <section class="features-section">
+    <div style="text-align:center; margin-bottom:2.5rem;">
+      <span class="badge-pill badge-cyan">Architecture Overview</span>
+      <h2 style="font-size:2rem; font-weight:800; color:#fff; margin-top:0.5rem; font-family:'Outfit';">
+        Enterprise Integration Architecture
+      </h2>
+      <p style="color:var(--text-muted); font-size:0.9rem; max-width:600px; margin:0.3rem auto 0;">
+        Built for Fortune 500 multinationals to automate the entire data pipeline from raw telemetry to statutory disclosures.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(16, 185, 129, 0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3);">
+          <i class="fa-solid fa-network-wired"></i>
+        </div>
+        <h3 style="color:#fff; font-size:1.15rem; margin-bottom:0.5rem;">1. Automated ERP Connectors</h3>
+        <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.6;">
+          Pre-built OData and REST connectors for SAP S/4HANA (Plant Maintenance & Utility Billing) and Workday HCM (EHS & Workforce metrics) with delta watermarking and retry policies.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(6, 182, 212, 0.15); color:#06b6d4; border:1px solid rgba(6,182,212,0.3);">
+          <i class="fa-solid fa-calculator"></i>
+        </div>
+        <h3 style="color:#fff; font-size:1.15rem; margin-bottom:0.5rem;">2. Safe AST Calculation Engine</h3>
+        <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.6;">
+          Python AST mathematical parser executes customized formulas without code injection vulnerabilities. Includes certified emission factors for EPA eGRID, DEFRA, BRSR, and GHG Protocol.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(99, 102, 241, 0.15); color:#818cf8; border:1px solid rgba(99,102,241,0.3);">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h3 style="color:#fff; font-size:1.15rem; margin-bottom:0.5rem;">3. Cryptographic Audit Lineage</h3>
+        <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.6;">
+          Every record stores SHA-256 raw snapshots, normalization proofs, factor citations, and evaluated algebraic expressions for full SOX and EU CSRD statutory compliance.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="border-top:1px solid var(--border-color); padding:2rem 3rem; text-align:center; color:var(--text-dim); font-size:0.8rem;">
+    OmniSync ESG Enterprise Platform | Compliant with EU CSRD (ESRS E1), US EPA eGRID 2024, UK DEFRA, SEBI BRSR Core, & GHG Protocol.
+  </footer>
+
+  <script>
+    function fillRole(email, roleName) {
+      document.getElementById('input-email').value = email;
+      document.getElementById('input-password').value = 'Enterprise2026!';
+      
+      const submitBtn = document.querySelector('#login-form button[type="submit"]');
+      submitBtn.innerHTML = `<i class="fa-solid fa-check"></i> Logging in as ${roleName.split('(')[0].trim()}...`;
+      setTimeout(() => {
+        document.getElementById('login-form').submit();
+      }, 400);
+    }
+  </script>
+
+</body>
+</html>
