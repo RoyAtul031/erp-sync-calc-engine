@@ -64,7 +64,7 @@ class ERPConnectionViewSet(viewsets.ModelViewSet):
                 "error": str(e),
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @action(detail=False, methods=["post"], url_path="sync-all")
+    @action(detail=False, methods=["get", "post"], url_path="sync-all")
     def sync_all(self, request):
         """
         Triggers sync for all active ERP connections.
