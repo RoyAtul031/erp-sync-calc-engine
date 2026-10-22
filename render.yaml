@@ -1,0 +1,79 @@
+# Render Infrastructure as Code (Blueprint)
+# Automatically provisions PostgreSQL Database, Web Service, and Celery Worker.
+version: "1"
+
+services:
+  # 1. Django Web Application (Dashboard + REST API + Swagger)
+  - type: web
+    name: omnisync-esg-web
+    runtime: python
+    buildCommand: "bash build_files.sh"
+    startCommand: "gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DB_ENGINE
+        value: postgres
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: omnisync-esg-db
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: omnisync-esg-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: omnisync-esg-db
+          property: password
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: omnisync-esg-db
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: omnisync-esg-db
+          property: port
+
+  # 2. Celery Background Worker (Heavy calculations & scheduled ERP ingestion)
+  - type: worker
+    name: omnisync-esg-celery-worker
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "celery -A core worker --loglevel=info"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DB_ENGINE
+        value: postgres
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: omnisync-esg-db
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: omnisync-esg-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: omnisync-esg-db
+          property: password
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: omnisync-esg-db
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: omnisync-esg-db
+          property: port
+
+databases:
+  # Managed PostgreSQL Database
+  - name: omnisync-esg-db
+    databaseName: erp_esg_db
+    user: esg_admin
+    plan: free
